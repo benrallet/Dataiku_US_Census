@@ -1,4 +1,5 @@
 setwd("C:/Users/Bénédicte/Documents/Dataiku")
+source("Scripts/fonctions.r")
 
 # Load the data into a variable
 training <- read.csv("Data/census_income_learn.csv", header=F)
@@ -53,7 +54,14 @@ hist( training$V1, col = grey(0.9), border = grey(0.2),
 # ? = missing data
 
 NIU <- matrix(0, 1, length(training))
+questionMark <- matrix(0, 1, length(training))
 
 for (i in 1:length(training)) {
   NIU[i] <- sum(training[,i] == " Not in universe") + sum(training[,i] == " Not in universe or children" )
+  questionMark[i] <- sum(training[,i] == " ?")
 }
+
+# Models
+
+treeModel <- tree.err(training[,1:41],training[,42],1)
+
