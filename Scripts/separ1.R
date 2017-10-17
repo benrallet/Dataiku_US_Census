@@ -7,7 +7,7 @@ separ1 <- function(X, z)
 	Xtst <- NULL
 	ztst <- NULL
 
-	for (k in 0:g)
+	for (k in 1:g)
 	{
 	    indk <- which(z==k)
     	ntot <- length(indk)

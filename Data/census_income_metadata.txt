@@ -1,3 +1,36 @@
+The following link lets you download an archive containing an “exercise” US Census dataset: http://thomasdata.s3.amazonaws.com/ds/us_census_full.zip
+
+This US Census dataset contains detailed but anonymized information for approximately 300,000 people.
+
+The archive contains 3 files: 
+o A large learning .csv file
+o Another test .csv file
+o A metadata file describing the columns of the two above mentioned files (identical for both)
+
+The goal of this exercise is to model the information contained in the last column (42nd), i.e., which people make more or less than $50,000 / year, from the information contained in the other columns. The exercise here consists of modeling a binary variable.
+
+Work with R or Python to carry out the following steps:
+o Import the learning and text files
+o Based on the learning file:
+
+o Make a quick statistic based and univariate audit of the different columns’ content and produce the results in visual / graphic format. This audit should describe the variable 
+distribution, the % of missing values, the extreme values, and so on.
+o Create a model using these variables (you can use whichever variables you want, or even create you own; for example, you could find the ratio or relationship between different variables, the one-hot encoding of “categorical” variables, etc.) to model wining more or less than $50,000 / year. Here, the idea would be for you to test one or two algorithms, such as logistic regression, or a decision tree. Feel free to choose others if wish.
+o Choose the model that appears to have the highest performance based on a comparison between reality (the 42nd variable) and the model’s prediction. 
+o Apply your model to the test file and measure it’s real performance on it (same method as above).
+
+The goal of this exercise is not to create the best or the purest model, but rather to describe the steps you took to accomplish it.
+
+Explain areas that may have been the most challenging for you.
+
+Find clear insights on the profiles of the people that make more than $50,000 / year. For example, which variables seem to be the most correlated with this phenomenon?
+
+Finally, you push your code on GitHub to share it with me, or send it via email.
+
+Once again, the goal of this exercise is not to solve this problem, but rather to spend a few hours on it and to thoroughly explain your approach.
+
+
+
 | This data was extracted from the census bureau database found at
 | http://www.census.gov/ftp/pub/DES/www/welcome.html
 | Donor: Terran Lane and Ronny Kohavi
@@ -182,3 +215,68 @@ fill inc questionnaire for veteran's admin: Not in universe, Yes, No.
 veterans benefits: 0, 2, 1.
 weeks worked in year: continuous.
 year: 94, 95.
+
+
+
+> err
+            [,1]
+ [1,] 0.04726106
+ [2,] 0.05032077
+ [3,] 0.04876704
+ [4,] 0.05012029
+ [5,] 0.04405353
+ [6,] 0.04936848
+ [7,] 0.04946872
+ [8,] 0.04801524
+ [9,] 0.04580994
+[10,] 0.04881471
+> mean(err)
+[1] 0.04819998
+
+err of the decision tree on the learn data set> err
+[1] 0.04768349
+
+> mc
+      [,1] [,2]
+[1,] 92428 1148
+[2,]  3609 2577
+
+MeanDecreaseGini
+AAGE           100.486050
+ACLSWKR         17.178969
+ADTIND          33.525933
+ADTOCC          34.650892
+AHGA            61.260588
+AHRSPAY          9.843898
+AHSCOL           5.938098
+AMARITL         23.917509
+AMJIND          51.264873
+AMJOCC          36.461856
+ARACE           19.511739
+AREORGN         23.068440
+ASEX            16.423684
+AUNMEM           7.276890
+AUNTYPE          5.662876
+AWKSTAT         15.892233
+CAPGAIN         10.729706
+CAPLOSS          3.687369
+DIVVAL          21.034384
+FILESTAT        22.196660
+GRINREG          6.962821
+HHDREL          31.430431
+MIGMTR1          9.846543
+MIGMTR3          9.199397
+MIGMTR4          9.570759
+MIGSAME          5.742032
+MIGSUN           8.209137
+NOEMP           32.377692
+PARENT           8.671345
+PEFNTVTY        12.501083
+PEMNTVTY        11.635971
+PENATVTY         6.193666
+PRCITSHP        10.781317
+SEOTR           10.447210
+VETQVA           3.439274
+VETYN            2.361512
+WKSWORK         28.649634
+YEAR             7.226236

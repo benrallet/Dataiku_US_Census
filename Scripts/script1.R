@@ -8,9 +8,9 @@ training <- read.csv("Data/census_income_learn.csv", header=F)
 summary(training)
 
 # Continuous variables
-boxplot(training[,1]) # age data
-# To be improved ! Remove extreme points
-boxplot(training$V25)
+# To be improved ! Remove extreme points (to many points equal to 0)
+boxplot(training$CAPGAIN[which(training$CAPGAIN != 0)])
+length(training$CAPGAIN[which(training$CAPGAIN != 0)])/length(training$CAPGAIN)
 
 # Male/Female V13
 sex <- barplot(prop.table(table(training$V13)), main = "Sex of the population", 
@@ -46,6 +46,7 @@ hist( training$V1, col = grey(0.9), border = grey(0.2),
       xlab = "Age [year]",
       ylab = "Density", proba = T, xlim = c(0,100), ylim = c(0,0.020))
 
+boxplot(training[,1]) # age data
 
 # Country of birth
 # -> modifify the variable : USA or else
@@ -60,8 +61,3 @@ for (i in 1:length(training)) {
   NIU[i] <- sum(training[,i] == " Not in universe") + sum(training[,i] == " Not in universe or children" )
   questionMark[i] <- sum(training[,i] == " ?")
 }
-
-# Models
-
-treeModel <- tree.err(training[,1:41],training[,42],1)
-
