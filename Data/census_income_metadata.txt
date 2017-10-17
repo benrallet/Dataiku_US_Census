@@ -280,3 +280,79 @@ VETQVA           3.439274
 VETYN            2.361512
 WKSWORK         28.649634
 YEAR             7.226236
+
+# Regression
+
+Training data
+cv.glmnet folds = 5
+error
+[1] 0.04746821
+
+CV avec differents validation set
+[1] 1
+[1] 0.04751165
+[1] 2
+[1] 0.04606055
+[1] 3
+[1] 0.05022053
+[1] 4
+[1] 0.04801524
+[1] 5
+[1] 0.04515612
+[1] 6
+[1] 0.04636127
+[1] 7
+[1] 0.04686247
+[1] 8
+[1] 0.04786488
+
+mean of 8 values 
+0.04725659
+
+> err
+            [,1]
+ [1,] 0.04711071
+ [2,] 0.04631115
+ [3,] 0.04846632
+ [4,] 0.04781476
+ [5,] 0.04951636
+ [6,] 0.04816560
+ [7,] 0.04826584
+ [8,] 0.04560946
+ [9,] 0.04811548
+[10,] 0.04756177
+> mean(err)
+[1] 0.04769374
+
+Test data
+> error
+[1] 0.04711213
+
+Classification tree:
+tree(formula = z ~ ., data = data.frame(training[, 1:38]), control = control_tree)
+Variables actually used in tree construction:
+ [1] "AMJOCC"   "FILESTAT" "AAGE"     "AHGA"     "VETQVA"   "HHDREL"  
+ [7] "CAPGAIN"  "DIVVAL"   "ASEX"     "AMARITL"  "AMJIND"   "CAPLOSS" 
+[13] "ACLSWKR"  "WKSWORK"  "ADTIND"   "AUNMEM"   "AREORGN"  "NOEMP"   
+[19] "MIGMTR1"  "ADTOCC"   "AHRSPAY"  "AWKSTAT"  "MIGMTR3"  "ARACE"   
+[25] "MIGMTR4"  "VETYN"    "GRINREG"  "PRCITSHP"
+Number of terminal nodes:  469 
+Residual mean deviance:  0.2203 = 43840 / 199100 
+Misclassification error rate: 0.04274 = 8528 / 199523
+
+
+Tree with CV
+> err
+            [,1]
+ [1,] 0.04891495
+ [2,] 0.04956897
+ [3,] 0.05022053
+ [4,] 0.04726343
+ [5,] 0.04801283
+ [6,] 0.04761427
+ [7,] 0.04926824
+ [8,] 0.04671211
+ [9,] 0.05012029
+[10,] 0.04821330
+> err_mean
+[1] 0.04859089

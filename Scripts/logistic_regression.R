@@ -55,9 +55,23 @@ for(i in 1:10){
   print(err[i])
 }
 
+IC <- function(moy,var,n,alpha) {
+  student <- qt(1-alpha/2, df = n-1)
+  IC <- c(moy - student*sqrt(var/n), moy + student*sqrt(var/n))
+  IC
+}
+
+err_mean <- mean(err)
+var <- apply(err,1, function(x) ((x-err_mean)^2))
+var <- 1/(10-1)*apply(matrix(var),2,sum)
+IC <- IC(err_mean,var,10,0.05)
+IC
+
+training <- scale(training)
 
 logistic <- cv.glmnet(x=as.matrix(training), y=z, family="binomial", alpha=1, nfolds=5)
 coef(logistic, s= "lambda.min")
+plot(logistic, xvar="lambda")
 
 test <- read.csv("Data/census_income_test.csv", header=F)
 colnames(test) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA", 
@@ -84,6 +98,11 @@ test <- data.frame(predict(dmy, newdata = test))
 
 test <- test[, !colnames(test) %in% colnames(test)[which(grepl( "Not.in.universe", colnames(test)))]]
 
+scale_center <- matrix(attributes(training)$"scaled:center",nrow=1,ncol=ncol(test))
+scale_scale <- matrix(attributes(training)$"scaled:scale", nrow=1,ncol=ncol(test))
+test <- scale(test, center=scale_center, scale=scale_scale)
+
+
 predtst <- as.factor(predict(logistic, 
                              as.matrix(test), 
                              s = "lambda.min",
@@ -101,3 +120,5 @@ mc[2,1] <- sum(predtst[which(ztst==2)] != ztst[which(ztst==2)])
 mc[2,2] <- sum(predtst[which(ztst==2)] == ztst[which(ztst==2)])
 mc
 
+coef <- as.matrix(coef(logistic, s= "lambda.min"))
+roc(ztst,predtst,plot=TRUE)

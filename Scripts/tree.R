@@ -47,11 +47,15 @@ for(i in 1:10){
   # Tree
   control_tree <- tree.control(nobs=dim(Xtrain)[1],mindev = 0.0001) # entire tree
   tr <- tree(ztrain ~ ., data.frame(Xtrain), control = control_tree) # zapp has to be factor
-  
   validation <- cv.tree(tr, FUN = prune.misclass)
+  #cvtree <- cv.tree(tr)
+  #best.size <- cvtree$size[which(cvtree$dev==min(cvtree$dev))][1]
+  #tr <- prune.misclass(tr, best=best.size)
+  
   prob <- predict(tr, Xtest)
   pred <- as.matrix(max.col(prob))
   err[i] <- sum(levels(ztest)[pred] != ztest)/length(ztest)
+  print(err[i])
 }
 
 IC <- function(moy,var,n,alpha) {
