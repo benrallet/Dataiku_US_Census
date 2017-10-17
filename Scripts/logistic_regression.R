@@ -55,6 +55,10 @@ for(i in 1:10){
   print(err[i])
 }
 
+
+logistic <- cv.glmnet(x=as.matrix(training), y=z, family="binomial", alpha=1, nfolds=5)
+coef(logistic, s= "lambda.min")
+
 test <- read.csv("Data/census_income_test.csv", header=F)
 colnames(test) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA", 
                     "AHRSPAY", "AHSCOL", "AMARITL", "AMJIND",
@@ -80,9 +84,20 @@ test <- data.frame(predict(dmy, newdata = test))
 
 test <- test[, !colnames(test) %in% colnames(test)[which(grepl( "Not.in.universe", colnames(test)))]]
 
-predtst <- as.factor(predict(logistic2, 
+predtst <- as.factor(predict(logistic, 
                              as.matrix(test), 
                              s = "lambda.min",
                              type = "class"))
 error <- sum(predtst != ztst)/length(ztst)
 error
+
+predtst <- as.numeric(predtst)
+ztst <- as.numeric(ztst)
+
+mc <- matrix(0, nrow=2,ncol=2)
+mc[1,1] <- sum(predtst[which(ztst==1)] == ztst[which(ztst==1)])
+mc[1,2] <- sum(predtst[which(ztst==1)] != ztst[which(ztst==1)])
+mc[2,1] <- sum(predtst[which(ztst==2)] != ztst[which(ztst==2)])
+mc[2,2] <- sum(predtst[which(ztst==2)] == ztst[which(ztst==2)])
+mc
+
