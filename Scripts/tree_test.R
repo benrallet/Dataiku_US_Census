@@ -1,6 +1,6 @@
 setwd("C:/Users/Bénédicte/Documents/Dataiku")
+set.seed(100)
 source("Scripts/data.R")
-source("Scripts/separ1.R")
 library(tree)
 
 training <- read.csv("Data/census_income_learn.csv", header=F)
@@ -13,18 +13,19 @@ colnames(training) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
                         "MIGSAME", "MIGSUN","NOEMP", "PARENT", 
                         "PEFNTVTY","PEMNTVTY","PENATVTY","PRCITSHP", 
                         "SEOTR", "VETQVA", "VETYN", "WKSWORK","YEAR", "INCOME")
+z <- training[,"INCOME"]
 
 # The attribute "instance weight" should *not* be used in the 
 # classifiers, so it is set to "ignore" in this file
 training <- subset(training, select=-c(MARSUPWT))
-training <- data.modificationOfCountryOfBirth(training)
-training <- subset(training, select=-c(GRINST,HHDFMX))
 
-z <- as.factor(training[,39])
+training <- data.modificationOfCountryOfBirth(training)
+training <- subset(training, select=-c(GRINST,HHDFMX,INCOME))
+training <- subset(training, select=-c(ADTIND,ADTOCC))
 
 # Fit the model with all the training data
-control_tree <- tree.control(nobs=dim(training[,1:38])[1],mindev = 0.0001) # entire tree
-tr <- tree(z ~ ., data.frame(training[,1:38]), control = control_tree) # zapp has to be factor
+control_tree <- tree.control(nobs=dim(training)[1],mindev = 0.0001) # entire tree
+tr <- tree(as.factor(z) ~ ., data.frame(training), control = control_tree, wts = TRUE) # zapp has to be factor
 
 validation <- cv.tree(tr, FUN = prune.misclass) 
 
@@ -40,18 +41,16 @@ colnames(test) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
                     "PEFNTVTY","PEMNTVTY","PENATVTY","PRCITSHP", 
                     "SEOTR", "VETQVA", "VETYN", "WKSWORK","YEAR", "INCOME")
 
-test <- data.modificationOfCountryOfBirth(test)
-ztest <- as.numeric(test[,"INCOME"])
-test <- subset(test, select=-c(GRINST,HHDFMX,INCOME))
+ztest <- test[,"INCOME"]
 
-prob <- predict(tr, test) # classe un jeu de données au moyen de l'arbre
-pred <- as.matrix(max.col(prob))
+test <- data.modificationOfCountryOfBirth(test)
+test <- subset(test, select=-c(GRINST,HHDFMX,INCOME))
+test <- subset(test, select=-c(ADTIND,ADTOCC))
+
+pred <- predict(tr, test, type = "class") # classe un jeu de données au moyen de l'arbre
 err <- sum(pred != ztest)/length(ztest)
 
+table(ztest,pred) # confusion matrix
+
 # confusion matrix
-mc <- matrix(0, nrow=2,ncol=2)
-mc[1,1] <- sum(pred[which(ztest==1)] == ztest[which(ztest==1)])
-mc[1,2] <- sum(pred[which(ztest==1)] != ztest[which(ztest==1)])
-mc[2,1] <- sum(pred[which(ztest==2)] != ztest[which(ztest==2)])
-mc[2,2] <- sum(pred[which(ztest==2)] == ztest[which(ztest==2)])
-mc
+confusionMatrix(ztest,pred)

@@ -16,13 +16,25 @@ z <- training[,"INCOME"]
 # Age 
 boxplot(training$AAGE~z, col=c("sienna2","cadetblue3"), xlab="Income", ylab="Age")
 
-# Weeks worked
-boxplot(training$WKSWORK~z, col=c("sienna2","cadetblue3"), xlab="Income", ylab="Sex")
-summary(training$WKSWORK[which(as.numeric(z)==1)])
-summary(training$WKSWORK[which(as.numeric(z)==2)])
+# Cap Gain
+boxplot(training$CAPGAIN[which(training$CAPGAIN!=0)]~z[which(training$CAPGAIN!=0)], col=c("sienna3","cadetblue2"), xlab="Income", ylab="Capital Gains")
 
-# sex
-table(training$ASEX,z)
+# Weeks worked
+boxplot(training$WKSWORK~z, col=c("sienna2","cadetblue3"), xlab="Income", ylab="Number of weeks")
+summary(training$WKSWORK[which(as.numeric(z)==1)])
+barplot(training$WKSWORK[which(as.numeric(z)==1)])
+summary(training$WKSWORK[which(as.numeric(z)==2)])
+hist(training$WKSWORK[which(as.numeric(z)==2)],
+     col = grey(0.9), border = grey(0.2),
+     main = paste("Variable WKSWORK for $ +50000"),
+     xlab = "Number of weeks", las = 3,
+     labels = F)
 
 # working code 
-table(training$ADTOCC,z)
+apply(table(training$AMJOCC,z),2,function(x) {x/sum(x)*100})
+
+# filer status
+apply(table(training$FILESTAT,z),2,function(x) {x/sum(x)*100})
+
+# education level
+apply(table(training$AHGA,z),2,function(x) {x/sum(x)*100})
