@@ -19,6 +19,7 @@ colnames(training) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
 training <- subset(training, select=-c(MARSUPWT))
 training <- data.modificationOfCountryOfBirth(training)
 training <- subset(training, select=-c(GRINST,HHDFMX))
+training <- subset(training, select=-c(ADTIND,ADTOCC))
 
 # 10-fold cross-validation
 # Randomly shuffle the training data
@@ -72,8 +73,8 @@ IC <- IC(err_mean,var,10,0.05)
 
 
 # Fit the model with all the training data
-control_tree <- tree.control(nobs=dim(training[,1:38])[1],mindev = 0.0001) # entire tree
-tr <- tree(as.factor(z) ~ ., data.frame(training[,1:38]), control = control_tree) # zapp has to be factor
+control_tree <- tree.control(nobs=dim(training[,1:36])[1],mindev = 0.0001) # entire tree
+tr <- tree(as.factor(z) ~ ., data.frame(training[,1:36]), control = control_tree, wts = TRUE) # zapp has to be factor
 
 validation <- cv.tree(tr, FUN = prune.misclass) 
 
@@ -90,14 +91,15 @@ colnames(test) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
                         "SEOTR", "VETQVA", "VETYN", "WKSWORK","YEAR", "INCOME")
 
 test <- data.modificationOfCountryOfBirth(test)
-ztest <- as.numeric(test[,"INCOME"])
+ztest <- test[,"INCOME"]
 test <- subset(test, select=-c(GRINST,HHDFMX,INCOME))
+test <- subset(test, select=-c(ADTIND,ADTOCC))
 
-prob <- predict(tr, test) # classe un jeu de données au moyen de l'arbre
-pred <- as.matrix(max.col(prob))
-err <- sum(as.numeric(tr$y) != as.numeric(ztest))/length(ztest)
+pred <- predict(tr, test, type = "class") # classe un jeu de données au moyen de l'arbre
+err <- sum(pred != ztest)/length(ztest)
 
 ztest <- as.matrix(ztest)
+table(ztest,pred) # confusion matrix
 
 # confusion matrix
 mc <- matrix(0, nrow=2,ncol=2)

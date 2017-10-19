@@ -1,7 +1,7 @@
 library(randomForest)
 
 set.seed(100)
-model <- randomForest(formula = as.factor(z[1:10000]) ~ ., data = training[1:10000,1:38])
+model <- randomForest(formula = as.factor(z) ~ ., data = training[,1:36])
 
 p <- model$predicted
 err <- sum(p != z[1:10000])/length(z[1:10000])
