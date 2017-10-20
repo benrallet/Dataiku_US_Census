@@ -15,9 +15,11 @@ z <- training[,"INCOME"]
 
 # Age 
 boxplot(training$AAGE~z, col=c("sienna2","cadetblue3"), xlab="Income", ylab="Age")
+summary(training$AAGE[which(as.numeric(z)==2)])
 
 # Cap Gain
 boxplot(training$CAPGAIN[which(training$CAPGAIN!=0)]~z[which(training$CAPGAIN!=0)], col=c("sienna3","cadetblue2"), xlab="Income", ylab="Capital Gains")
+summary(training$CAPGAIN[which(as.numeric(z)==2)])
 
 # Weeks worked
 boxplot(training$WKSWORK~z, col=c("sienna2","cadetblue3"), xlab="Income", ylab="Number of weeks")

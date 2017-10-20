@@ -42,17 +42,58 @@ pie(table(training$ARACE), main="Variable ARACE",
 
 plot(training$ARACE)
 
+pie(table(training$GRINREG), main="Variable GRINREG",
+    labels=levels(training$GRINREG),col=topo.colors(length(levels(training$GRINREG))))
+GRINREG2 <- training$GRINREG[which(training$GRINREG != " Not in universe")]
+pie(table(GRINREG2), main="Variable GRINREG without 'Not in Universe' value",
+    labels=levels(GRINREG2),col=topo.colors(length(levels(GRINREG2))))
+
+barplot(table(training$PARENT),
+        main = "Variable PARENT",
+        names.arg=sapply(levels(training$PARENT),FUN = function(x) {paste(strwrap(x, width = 10), collapse = "\n")}), las=2)
+
+barplot(table(training$HHDREL),
+        main = "Variable HHDREL",cex.names = 0.8,
+        names.arg=sapply(levels(training$HHDREL),FUN = function(x) {paste(strwrap(x, width = 10), collapse = "\n")}), las=2)
+
+barplot(table(training$FILESTAT),
+        main = "Variable FILESTAT",
+        names.arg=sapply(levels(training$FILESTAT),FUN = function(x) {paste(strwrap(x, width = 10), collapse = "\n")}), las=2)
 barplot(table(training$AMJIND),names.arg=levels(training$AMJIND))
 barplot(table(training$ACLSWKR), cex.names = 0.8, cex.axis = 0.8,
-        main = "Variable AMJIND",
+        main = "Variable ACLSWKR",
         names.arg=sapply(levels(training$ACLSWKR),FUN = function(x) {paste(strwrap(x, width = 8), collapse = "\n")}),las=2)
 
+barplot(table(training$PRCITSHP), cex.names = 0.8, cex.axis = 0.8,
+        main = "Variable PRCITSHP",
+        names.arg=sapply(levels(training$PRCITSHP),FUN = function(x) {paste(strwrap(x, width = 8), collapse = "\n")}),las=2)
+
+barplot(table(training$VETQVA), cex.names = 0.8, cex.axis = 0.8,
+        main = "Variable VETQVA", col= "green",
+        names.arg=sapply(levels(training$VETQVA),FUN = function(x) {paste(strwrap(x, width = 8), collapse = "\n")}),las=2)
+
+barplot(table(training$VETYN), cex.names = 0.8, cex.axis = 0.8,
+        main = "Variable VETYN", col= "blue",
+        names.arg=sapply(levels(as.factor(training$VETYN)),FUN = function(x) {paste(strwrap(x, width = 8), collapse = "\n")}),las=2)
+
+barplot(table(training$AWKSTAT), cex.names = 0.8, cex.axis = 0.8,
+        main = "Variable AWKSTAT", col="orange",
+        names.arg=sapply(levels(training$AWKSTAT),FUN = function(x) {paste(strwrap(x, width = 8), collapse = "\n")}),las=2)
+
+
+ee# education
 pie(table(training$AHGA), cex = 0.5,
         main = "Variable AHGA", col = rainbow(length(levels(training$AHGA)))
     )
 
+pie(table(training$YEAR), cex = 1.2,
+    main = "Variable YEAR", col = topo.colors(length(levels(as.factor(training$YEAR))))
+)
+
+# college (yes or no question)
 summary(training$AHSCOL)
 
+# age
 hist( training$AAGE, col = grey(0.9), border = grey(0.2),
       main = paste("Variable AAGE"),
       xlab = "Age [year]",
@@ -75,16 +116,16 @@ hist( training$WKSWORK, col = grey(0.9), border = grey(0.2),
 (length(training$WKSWORK[which(training$CAPGAIN == 0)])+length(training$WKSWORK[which(training$CAPGAIN == 52)]))/length(training$WKSWORK)*100
 
 
-# Country of birth
-# -> modifify the variable : USA or else
-
 # Missing data
 # ? = missing data
+# Not in universe values
 
 NIU <- matrix(0, 1, length(training))
 questionMark <- matrix(0, 1, length(training))
 
 for (i in 1:length(training)) {
-  NIU[i] <- sum(training[,i] == " Not in universe") + sum(training[,i] == " Not in universe or children" )
+  NIU[i] <- sum(training[,i] == " Not in universe") + sum(training[,i] == " Not in universe or children" ) +  sum(training[,i] ==" Not in universe under 1 year old")
   questionMark[i] <- sum(training[,i] == " ?")
 }
+colnames(NIU) <- colnames(training)
+colnames(questionMark) <- colnames(training)

@@ -1,3 +1,4 @@
+# Application of the model to the test file
 setwd("C:/Users/Bénédicte/Documents/Dataiku")
 set.seed(100)
 source("Scripts/data.R")
@@ -15,6 +16,7 @@ colnames(training) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
                         "SEOTR", "VETQVA", "VETYN", "WKSWORK","YEAR", "INCOME")
 z <- training[,"INCOME"]
 
+# Pre-processing
 # The attribute "instance weight" should *not* be used in the 
 # classifiers, so it is set to "ignore" in this file
 training <- subset(training, select=-c(MARSUPWT))
@@ -43,12 +45,14 @@ colnames(test) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
 
 ztest <- test[,"INCOME"]
 
+# Same pre-processing than for the training data
 test <- data.modificationOfCountryOfBirth(test)
 test <- subset(test, select=-c(GRINST,HHDFMX,INCOME))
 test <- subset(test, select=-c(ADTIND,ADTOCC))
 
+# prediction
 pred <- predict(tr, test, type = "class") # classe un jeu de données au moyen de l'arbre
-err <- sum(pred != ztest)/length(ztest)
+err <- sum(pred != ztest)/length(ztest) # test error rate
 
 table(ztest,pred) # confusion matrix
 
