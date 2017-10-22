@@ -1,8 +1,8 @@
 # Logistic Regression
 library(glmnet)
 library(caret)
-
 setwd("C:/Users/Bénédicte/Documents/Dataiku")
+source("Scripts/data.R")
 
 training <- read.csv("Data/census_income_learn.csv", header=F)
 colnames(training) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA", 
@@ -15,16 +15,17 @@ colnames(training) <- c("AAGE","ACLSWKR","ADTIND","ADTOCC", "AHGA",
                         "PEFNTVTY","PEMNTVTY","PENATVTY","PRCITSHP", 
                         "SEOTR", "VETQVA", "VETYN", "WKSWORK","YEAR", "INCOME")
 
-
-training <- training[sample(nrow(training)),]
-z <- training[,"INCOME"]
-
 # Pre-processing
 # Remove varaibles (justification in the report)
 training <- subset(training, select=-c(MARSUPWT)) # "instance weight" not used
-training <- subset(training, select=-c(GRINST,HHDFMX,INCOME,ADTIND,ADTOCC))
+training <- subset(training, select=-c(GRINST,HHDFMX,ADTIND,ADTOCC))
 training <- data.modificationOfCountryOfBirth(training)
 training <- data.modificationBinaryVariable(training)
+
+# Randomly shuffle the training data
+training <- training[sample(nrow(training)),]
+z <- training[,"INCOME"]
+training <- subset(training, select=-c(INCOME))
 
 # one-hot encoding
 dmy <- dummyVars(" ~ .", data = training)
@@ -33,8 +34,6 @@ training <- training[, !colnames(training) %in% colnames(training)[which(grepl( 
 
 
 # Cross-Validation to estimate the error rate
-# Randomly shuffle the training data
-training <- training[sample(nrow(training)),]
 
 # Create 10 equally size folds
 folds <- cut(seq(1,nrow(training)), breaks=10, labels=FALSE)
@@ -45,7 +44,7 @@ err <- matrix(nrow=10, ncol=1)
 #Perform 10-fold cross validation
 for(i in 1:10){
   print(i)
-  testIndexes <- which(folds==i,arr.ind = TRUE)
+  testIndexes <- which(folds == i, arr.ind = TRUE)
   
   # create the training and test sets
   Xtest <- training[testIndexes,]
@@ -54,7 +53,11 @@ for(i in 1:10){
   ztrain <- z[-testIndexes]
 
   # learn the model with the training dataset
-  logistic2 <- cv.glmnet(x=as.matrix(Xtrain), y=ztrain, family="binomial", alpha=1, nfolds=5)
+  logistic2 <- cv.glmnet(x=as.matrix(Xtrain), 
+                         y=ztrain, 
+                         family="binomial", 
+                         alpha=1, 
+                         nfolds=5)
   # prediction for the test dataset, use of lambda.min as lambda
   pred <- as.factor(predict(logistic2, 
                             as.matrix(Xtest), 
@@ -84,3 +87,8 @@ training <- scale(training)
 logistic <- cv.glmnet(x=as.matrix(training), y=z, family="binomial", alpha=1, nfolds=5)
 coef(logistic, s= "lambda.min")
 plot(logistic, xvar="lambda")
+
+pred <- as.factor(predict(logistic, 
+                          as.matrix(training), 
+                          s = "lambda.min",
+                          type = "class"))
